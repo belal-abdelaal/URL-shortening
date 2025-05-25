@@ -12,7 +12,8 @@ class UserController extends Controller
     public function validate(UserRequest $request, $keys = ["name", "email", "password"])
     {
         $data = $request->only($keys);
-        $data['password'] = Hash::make($data['password']);
+        if (isset($keys['password']))
+            $data['password'] = Hash::make($data['password']);
         return $data;
     }
     public function create(UserRequest $request)
