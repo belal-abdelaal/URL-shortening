@@ -31,7 +31,7 @@ class UserRequest extends FormRequest
         // Build whatever JSON structure you like:
         $response = response([
             'errors'  => $validator->errors(),
-        ], 422);
+        ], 400);
 
         throw new HttpResponseException($response);
     }
