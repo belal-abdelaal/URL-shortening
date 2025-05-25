@@ -20,7 +20,7 @@ class UserController extends Controller
         $data = $this->validate($request);
         $user = User::create($data);
         if ($user) {
-            response([
+            return response([
                 "messsage" => "Account created successfuly",
                 "user" => [
                     "name" => $user->name,
@@ -28,7 +28,7 @@ class UserController extends Controller
                 ]
             ], 201);
         } else {
-            response([
+            return response([
                 "messsage" => "Internal server error !"
             ], 500);
         }
