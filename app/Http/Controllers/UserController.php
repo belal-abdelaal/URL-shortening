@@ -34,4 +34,13 @@ class UserController extends Controller
             ], 500);
         }
     }
+    public function login(PartialUserRequest $request)
+    {
+        $data = $this->validate($request);
+        $user = User::where("email", $data["email"])->first();
+        if ($user) {
+            $token = $user->createToken($user->name);
+            return response(["token" => $token->plainTextToken]);
+        }
+    }
 }
