@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\PartialUserRequest;
+use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -12,9 +13,9 @@ use function Laravel\Prompts\password;
 
 class UserController extends Controller
 {
-    public function validate(UserRequest|PartialUserRequest $request)
+    public function validate(UserRequest|UserLoginRequest|PartialUserRequest $request, $keys = ["name", "email", "password"])
     {
-        return $request->validated();
+        return $request->only($keys);
     }
     public function create(UserRequest $request)
     {
@@ -34,13 +35,11 @@ class UserController extends Controller
             ], 500);
         }
     }
-    public function login(PartialUserRequest $request)
+    public function login(UserLoginRequest $request)
     {
-        $data = $this->validate($request);
+        $data = $this->validate($request, ["email", "password"]);
         $user = User::where("email", $data["email"])->first();
-        if ($user) {
-            $token = $user->createToken($user->name);
-            return response(["token" => $token->plainTextToken]);
-        }
+        $token = $user->createToken($user->name);
+        return response(["token" => $token->plainTextToken]);
     }
 }
