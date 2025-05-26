@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PartialUserRequest;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
+use function Laravel\Prompts\password;
+
 class UserController extends Controller
 {
-    public function validate(UserRequest $request, $keys = ["name", "email", "password"])
+    public function validate(UserRequest|PartialUserRequest $request)
     {
-        $data = $request->only($keys);
-        if (isset($keys['password']))
-            $data['password'] = Hash::make($data['password']);
-        return $data;
+        return $request->validated();
     }
     public function create(UserRequest $request)
     {
