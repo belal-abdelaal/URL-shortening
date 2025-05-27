@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\URLController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\ValidateToken;
 use Illuminate\Http\Request;
@@ -11,6 +12,10 @@ Route::controller(UserController::class)->group(function () {
     Route::put("/users", "update")->middleware(ValidateToken::class);
 });
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::controller(URLController::class)->group(function () {
+    Route::post("/url", "create")->middleware(ValidateToken::class);
+});
+
+// Route::get('/user', function (Request $request) {
+//     return $request->user();
+// })->middleware('auth:sanctum');
