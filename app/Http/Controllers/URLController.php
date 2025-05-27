@@ -50,4 +50,24 @@ class URLController extends Controller
         $url->save();
         return redirect($url->url);
     }
+    public function delete(Request $request, $id)
+    {
+        $userId = $this->parseUserToken($request->header("token"));
+        $url = Url::where("user_id", $userId)->where("id", $id)->first();
+        if (!$url)
+            return response([
+                "message" => "URL not found"
+            ], 404);
+
+        try {
+            $url->delete();
+        } catch (\Throwable $th) {
+            return response([
+                "message" => $th->getMessage()
+            ], 500);
+        }
+        return response([
+            "message" => "URL deleted successfuly"
+        ]);
+    }
 }
