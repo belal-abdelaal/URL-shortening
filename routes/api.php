@@ -14,6 +14,7 @@ Route::controller(UserController::class)->group(function () {
 
 Route::controller(URLController::class)->group(function () {
     Route::post("/url", "create")->middleware(ValidateToken::class);
+    Route::get("/url/{id?}", "get")->middleware(ValidateToken::class);
     Route::get('/{short_uri}', "redirect");
     Route::delete("/url/{id}", "delete")->middleware(ValidateToken::class);
 });

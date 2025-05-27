@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\URLRequest;
+use App\Http\Resources\UrlCollection;
+use App\Http\Resources\UrlResource;
 use App\Models\Url;
 use Illuminate\Http\Request;
 use Laravel\Sanctum\PersonalAccessToken;
+
+use function PHPSTORM_META\type;
 
 class URLController extends Controller
 {
@@ -37,6 +41,18 @@ class URLController extends Controller
             "message" => "URL created successfuly",
             "short_url" => "http://127.0.0.1:8000/" . $short_url->short_uri
         ], 201);
+    }
+    public function get(Request $request, ?int $id = null)
+    {
+        $userId = $this->parseUserToken($request->header("token"));
+        $url_s = $id ?
+            Url::where("user_id", $userId)->where("id", $id)->first() :
+            Url::where("user_id", $userId)->get();
+
+        if (!isset($url_s["id"]))
+            return response(new UrlCollection($url_s));
+        else
+            return response(new UrlResource($url_s));
     }
     public function redirect($short_uri)
     {
