@@ -39,6 +39,12 @@ class UserController extends Controller
     {
         $data = $this->validate($request, ["email", "password"]);
         $user = User::where("email", $data["email"])->first();
+        if (!$user)
+            return response(["message" => "Internal server error !"]);
+
+        if (!Hash::check($data["password"], $user->password))
+            return response(["message" => "The password is incorrect"], 400);
+
         $token = $user->createToken($user->name);
         return response(["token" => $token->plainTextToken]);
     }
