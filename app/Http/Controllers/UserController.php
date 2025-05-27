@@ -31,10 +31,7 @@ class UserController extends Controller
         if ($user) {
             return response([
                 "messsage" => "Account created successfuly",
-                "user" => [
-                    "name" => $user->name,
-                    "email" => $user->email
-                ]
+                "user" => new UserResource($user)
             ], 201);
         } else {
             return response([
