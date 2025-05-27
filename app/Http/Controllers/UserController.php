@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PartialUserRequest;
 use App\Http\Requests\UserLoginRequest;
 use App\Http\Requests\UserRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -17,6 +18,11 @@ class UserController extends Controller
     public function validate(UserRequest|UserLoginRequest|PartialUserRequest $request, $keys = ["name", "email", "password"])
     {
         return $request->only($keys);
+    }
+    public function parseUserToken($token)
+    {
+        $token = PersonalAccessToken::findToken($token);
+        return $token->tokenable_id;
     }
     public function create(UserRequest $request)
     {
@@ -48,5 +54,22 @@ class UserController extends Controller
 
         $token = $user->createToken($user->name);
         return response(["token" => $token->plainTextToken]);
+    }
+    public function update(PartialUserRequest $request)
+    {
+        $data = $this->validate($request);
+        if (!$data)
+            return response(["message" => "Empty request !"], 400);
+
+        $userId = $this->parseUserToken($request->header("token"));
+        $user = User::where("id", $userId)->first();
+        if (!$user)
+            return response(["message" => "Internal server error !"], 500);
+
+        $user->update($data);
+        return response([
+            "message" => "Account data updated successfuly",
+            "user" => new UserResource($user)
+        ]);
     }
 }
