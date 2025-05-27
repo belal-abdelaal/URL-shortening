@@ -42,12 +42,17 @@ class URLController extends Controller
             "short_url" => "http://127.0.0.1:8000/" . $short_url->short_uri
         ], 201);
     }
-    public function get(Request $request, ?int $id = null)
+    public function get(Request $request, $id = null)
     {
         $userId = $this->parseUserToken($request->header("token"));
         $url_s = $id ?
             Url::where("user_id", $userId)->where("id", $id)->first() :
             Url::where("user_id", $userId)->get();
+
+        if (!$url_s)
+            return response([
+                "message" => "URL not found"
+            ], 404);
 
         if (!isset($url_s["id"]))
             return response(new UrlCollection($url_s));
