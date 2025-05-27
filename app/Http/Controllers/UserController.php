@@ -8,6 +8,7 @@ use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\PersonalAccessToken;
 
 use function Laravel\Prompts\password;
 
@@ -40,7 +41,7 @@ class UserController extends Controller
         $data = $this->validate($request, ["email", "password"]);
         $user = User::where("email", $data["email"])->first();
         if (!$user)
-            return response(["message" => "Internal server error !"]);
+            return response(["message" => "Internal server error !"], 500);
 
         if (!Hash::check($data["password"], $user->password))
             return response(["message" => "The password is incorrect"], 400);
