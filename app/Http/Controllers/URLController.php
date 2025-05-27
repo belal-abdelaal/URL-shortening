@@ -38,4 +38,16 @@ class URLController extends Controller
             "short_url" => "http://127.0.0.1:8000/" . $short_url->short_uri
         ], 201);
     }
+    public function redirect($short_uri)
+    {
+        $url = Url::where("short_uri", $short_uri)->first();
+        if (!$url)
+            return response([
+                "message" => "URL not found"
+            ], 404);
+
+        $url->accessCount++;
+        $url->save();
+        return redirect($url->url);
+    }
 }
